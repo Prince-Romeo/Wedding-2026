@@ -384,7 +384,7 @@ footer {
   .timeline::before { left: 20px; }
   .event-item, .event-item:nth-child(odd) { flex-direction: column; padding-left: 60px; }
   .event-card { width: 100%; }
-  .event-icon { left: 20px; transform: none; }
+  .event-icon { left: -7px; transform: none; }
   .cursor, .cursor-dot { display: none !important; }
   .fab-group { bottom: 1.5rem; right: 1rem; }
   .gift-box-wrap { transform: scale(0.9); }
