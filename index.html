@@ -2739,6 +2739,12 @@
       margin: 2.5rem 0 1.2rem;
     }
 
+    .gift-items-actions {
+      display: flex;
+      justify-content: center;
+      margin: -0.5rem 0 1.2rem;
+    }
+
     .gift-items-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
@@ -2767,7 +2773,6 @@
       border-color: rgba(76, 175, 80, 0.5);
       background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(61, 21, 0, 0.4));
       opacity: 0.7;
-      pointer-events: none;
     }
 
     .gift-item-card.gifted::after {
@@ -2803,6 +2808,16 @@
       font-style: italic;
     }
 
+    .gift-item-status {
+      display: block;
+      margin-top: 0.75rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      letter-spacing: 1.4px;
+      color: #81c784;
+      text-transform: uppercase;
+    }
+
     .gift-item-btn {
       margin-top: 0.8rem;
       padding: 0.4rem 1.1rem;
@@ -2820,6 +2835,18 @@
 
     .gift-item-btn:hover {
       transform: scale(1.05);
+    }
+
+    .gift-item-btn.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(201, 168, 76, 0.35);
+      color: var(--gold-light);
+    }
+
+    .gift-item-btn.reset {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      color: rgba(255, 255, 255, 0.8);
     }
 
     .gift-note-box {
@@ -3320,7 +3347,7 @@
         <div class="upi-card reveal">
           <span class="upi-card-icon">💳</span>
           <div class="upi-card-name">Gift via UPI</div>
-          <div class="upi-card-person">Prince Kumar</div>
+          <div class="upi-card-person">Prince Sahani</div>
           <div class="upi-id-box" onclick="copyUPI('8521179901@naviaxis', this)">
             <span class="upi-id-text">8521179901@naviaxis</span>
             <button class="upi-copy-btn" id="copyBtn1">📋 Copy</button>
@@ -3347,6 +3374,9 @@
 
         <!-- Gift Ideas -->
         <div class="gift-items-title reveal">✨ Gift Ideas for the Couple ✨</div>
+        <div class="gift-items-actions reveal">
+          <button class="gift-item-btn reset" onclick="resetGiftChoices()">Reset Gift Choices</button>
+        </div>
         <div class="gift-items-grid" id="giftItemsGrid">
           <!-- Rendered by JS -->
         </div>
@@ -3939,28 +3969,56 @@
     ];
 
     const giftGrid = document.getElementById('giftItemsGrid');
-    const gifted = JSON.parse(localStorage.getItem('giftedItems') || '[]');
 
-    giftItems.forEach((item, i) => {
-      const card = document.createElement('div');
-      card.className = 'gift-item-card reveal' + (gifted.includes(i) ? ' gifted' : '');
-      card.innerHTML = `
-        <span class="gift-item-emoji">${item.emoji}</span>
-        <div class="gift-item-name">${item.name}</div>
-        <div class="gift-item-price">${item.price}</div>
-        ${!gifted.includes(i) ? `<button class="gift-item-btn" onclick="markGifted(${i}, this)">🎁 I'll Gift This!</button>` : ''}
-      `;
-      giftGrid.appendChild(card);
-    });
+    function getGiftedItems() {
+      return JSON.parse(localStorage.getItem('giftedItems') || '[]');
+    }
 
-    function markGifted(idx, btn) {
-      const card = btn.closest('.gift-item-card');
-      card.classList.add('gifted');
-      btn.remove();
-      const saved = JSON.parse(localStorage.getItem('giftedItems') || '[]');
-      if (!saved.includes(idx)) { saved.push(idx); localStorage.setItem('giftedItems', JSON.stringify(saved)); }
+    function saveGiftedItems(items) {
+      localStorage.setItem('giftedItems', JSON.stringify(items));
+    }
+
+    function renderGiftItems() {
+      const gifted = getGiftedItems();
+      giftGrid.innerHTML = '';
+
+      giftItems.forEach((item, i) => {
+        const isGifted = gifted.includes(i);
+        const card = document.createElement('div');
+        card.className = 'gift-item-card reveal visible' + (isGifted ? ' gifted' : '');
+        card.innerHTML = `
+          <span class="gift-item-emoji">${item.emoji}</span>
+          <div class="gift-item-name">${item.name}</div>
+          <div class="gift-item-price">${item.price}</div>
+          ${isGifted
+            ? `<span class="gift-item-status">Already selected</span><button class="gift-item-btn secondary" onclick="unmarkGifted(${i})">Change / Undo</button>`
+            : `<button class="gift-item-btn" onclick="markGifted(${i})">🎁 I'll Gift This!</button>`}
+        `;
+        giftGrid.appendChild(card);
+      });
+    }
+
+    function markGifted(idx) {
+      const saved = getGiftedItems();
+      if (!saved.includes(idx)) {
+        saved.push(idx);
+        saveGiftedItems(saved);
+      }
+      renderGiftItems();
       launchConfetti();
     }
+
+    function unmarkGifted(idx) {
+      saveGiftedItems(getGiftedItems().filter(item => item !== idx));
+      renderGiftItems();
+    }
+
+    function resetGiftChoices() {
+      localStorage.removeItem('giftedItems');
+      renderGiftItems();
+    }
+
+    renderGiftItems();
 
     function copyUPI(upiId, el) {
       navigator.clipboard.writeText(upiId).catch(() => {
