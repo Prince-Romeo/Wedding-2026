@@ -2181,6 +2181,97 @@
       line-height: 1.1;
     }
 
+    .footer-contact {
+      max-width: 720px;
+      margin: 0 auto 1.8rem;
+      padding: 1.4rem;
+      background: rgba(201, 168, 76, 0.06);
+      border: 1px solid rgba(201, 168, 76, 0.18);
+      border-radius: 8px;
+    }
+
+    .footer-contact-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .footer-contact-text {
+      max-width: 560px;
+      margin: 0 auto 1rem;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    .footer-contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .footer-contact-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.55rem 0.9rem;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(201, 168, 76, 0.18);
+      color: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+      font-size: 0.82rem;
+      transition: all 0.3s;
+    }
+
+    .footer-contact-links a:hover {
+      background: rgba(201, 168, 76, 0.14);
+      color: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    .footer-contact-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .footer-contact-person {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(201, 168, 76, 0.16);
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .footer-contact-name {
+      display: block;
+      font-family: 'Cinzel', serif;
+      color: var(--gold-light);
+      font-size: 0.86rem;
+      letter-spacing: 1px;
+      margin-bottom: 0.25rem;
+    }
+
+    .footer-contact-role {
+      display: block;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.72rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .footer-contact-note {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
     /* ── CONFETTI ── */
     #confettiCanvas {
       position: fixed;
@@ -2988,7 +3079,8 @@
           <h3 class="couple-name">Khushbu Kumari</h3>
           <p class="couple-role">🌸 The Bride</p>
           <p class="couple-family">Beloved daughter of<br><strong>Shri Shubhod Sahani</strong><br>&amp; <strong>Smt.
-              Shardha Devi</strong><br><br>Granddaughter of<br><strong>Shri Siplal Sahani</strong><br>Resident of Saran,
+              Shardha Devi</strong><br><br>Granddaughter of<br><strong>Shri Siplal Sahani</strong><br>Resident of
+            Salempur, Sutihar, Derani, Saran,
             Bihar</p>
         </div>
         <div class="couple-card reveal-right">
@@ -2996,8 +3088,8 @@
               style="width:100%;height:100%;object-fit:cover;object-position:center top;"></div>
           <h3 class="couple-name">Sujeet Kumar</h3>
           <p class="couple-role">💎 The Groom</p>
-          <p class="couple-family">Beloved son of<br><strong>Shri Naresh Sahani</strong><br>&amp; <strong>Smt. Kavita
-              Kumar</strong><br><br>Grandson of<br><strong>Shri Hari Narayan Kumar</strong><br>Resident of Ghurahu
+          <p class="couple-family">Beloved son of<br><strong>Shri Naresh Sahani</strong><br>&amp; <strong>Smt. kabutri
+              devi</strong><br><br>Grandson of<br><strong>Shri Police sahani</strong><br>Resident of Ghurahu
             Kothiyan, Bihar</p>
         </div>
       </div>
@@ -3033,7 +3125,8 @@
             <span class="event-badge">Day 2</span>
             <p class="event-name">🌿 Haldi Ceremony</p>
             <p class="event-date">May 11, 2026</p>
-            <p class="event-detail">Tuesday • 11:00 AM onwards<br>Sahani Residence, Saran<br>Blessings of turmeric for a
+            <p class="event-detail">Tuesday • 11:00 AM onwards<br>Salempur, Sutihar, Derani, Saran — Bihar<br>Blessings
+              of turmeric for a
               glowing start to this new journey</p>
           </div>
           <div class="event-icon">🌿</div>
@@ -3043,7 +3136,8 @@
             <span class="event-badge">Day 2 Night</span>
             <p class="event-name">🎊 Sangeet & Mehendi</p>
             <p class="event-date">May 11, 2026</p>
-            <p class="event-detail">Tuesday • 6:00 PM onwards<br>Sahani Residence, Saran<br>Music, dance & intricate
+            <p class="event-detail">Tuesday • 6:00 PM onwards<br>Salempur, Sutihar, Derani, Saran — Bihar<br>Music,
+              dance & intricate
               mehendi artistry — a night to remember</p>
           </div>
           <div class="event-icon">🎊</div>
@@ -3100,18 +3194,19 @@
       <div class="venue-panel" id="vp1">
         <div class="location-info reveal-left">
           <div class="location-pin">📍</div>
-          <h3 class="location-title">Sahani Residence, Saran</h3>
-          <div class="location-address">Saran District,<br>Bihar, India</div>
+          <h3 class="location-title">Salempur</h3>
+          <div class="location-address">Salempur, Sutihar, Derani,<br>Saran — Bihar</div>
           <p style="font-size:0.85rem;color:var(--text);margin-top:1rem;line-height:2">📅 <strong>Haldi:</strong> May
             11, 2026 • 11:00 AM<br>🎊 <strong>Sangeet:</strong> May 11, 2026 • 6:00 PM<br>📞 <strong>Bride's
               Family:</strong> +91 70700 73142</p>
-          <a class="directions-btn" href="https://maps.google.com/maps?q=Saran+Bihar+India" target="_blank"><svg
-              width="16" height="16" viewBox="0 0 24 24" fill="white">
+          <a class="directions-btn" href="https://maps.google.com/maps?q=Salempur+Sutihar+Derani+Saran+Bihar"
+            target="_blank"><svg width="16" height="16" viewBox="0 0 24 24" fill="white">
               <path
                 d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
             </svg>Get Directions on Google Maps</a>
         </div>
-        <div class="map-frame reveal-right"><iframe src="https://maps.google.com/maps?q=Saran+Bihar+India&output=embed"
+        <div class="map-frame reveal-right"><iframe
+            src="https://maps.google.com/maps?q=Salempur+Sutihar+Derani+Saran+Bihar&output=embed"
             loading="lazy"></iframe></div>
       </div>
       <div class="venue-panel" id="vp2">
@@ -3280,6 +3375,35 @@
     <p class="footer-names">Khushbu ❤ Sujeet</p>
     <p class="footer-date">MAY 12, 2026 &nbsp;·&nbsp; SARAN, BIHAR</p>
     <div class="footer-divider"></div>
+    <div class="footer-contact">
+      <h3 class="footer-contact-title">📩 Get in Touch</h3>
+      <p class="footer-contact-text">Event se judi jankari, wishes, ya kisi bhi help ke liye neeche diye gaye contacts
+        par baat kar sakte hain.</p>
+      <div class="footer-contact-list">
+        <div class="footer-contact-person">
+          <span class="footer-contact-name">Prince Sahani</span>
+          <span class="footer-contact-role">Event Details & Invitation Help</span>
+          <div class="footer-contact-links">
+            <a href="tel:+918521179901">📞 Call: +91 8521179901</a>
+            <a href="https://wa.me/918521179901" target="_blank">💬 WhatsApp</a>
+          </div>
+        </div>
+        <div class="footer-contact-person">
+          <span class="footer-contact-name">Prince Sahani</span>
+          <span class="footer-contact-role">Backup Contact</span>
+          <div class="footer-contact-links">
+            <a href="tel:+917520182002">📞 Call: +91 7520182002</a>
+            <a href="https://wa.me/917520182002" target="_blank">💬 WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-contact-links">
+        <a href="https://www.instagram.com/itz___prince__1.2" target="_blank">📸 Instagram: @itz___prince__1.2</a>
+        <a href="mailto:prince7065@gmail.com">📧 Email: prince7065@gmail.com</a>
+      </div>
+      <p class="footer-contact-note">Your presence and blessings mean a lot to us. Looking forward to hearing from you!
+        💖</p>
+    </div>
     <div class="footer-credit">
       <div class="made-by-card">
         <div class="footer-avatar" id="footerAvatar">
@@ -3323,8 +3447,8 @@
       <div
         style="margin:1.5rem auto;width:80px;height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent)">
       </div>
-      <p style="font-size:0.8rem;font-family:'Cinzel',serif;letter-spacing:2px;color:#8B6914">📞 +91 9805718029
-        &nbsp;|&nbsp; +91 8521179901</p>
+      <p style="font-size:0.8rem;font-family:'Cinzel',serif;letter-spacing:2px;color:#8B6914">📞 +91 8521179901
+        &nbsp;|&nbsp; +91 7520182002</p>
       <p style="font-size:0.7rem;font-family:'Cinzel',serif;letter-spacing:1px;color:#aaa;margin-top:0.5rem">Dinner will
         be served from 9:00 PM onwards</p>
       <p style="margin-top:1rem;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:2px;color:#C9A84C">Made by
