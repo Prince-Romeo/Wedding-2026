@@ -1060,17 +1060,6 @@
       background: linear-gradient(135deg, #9B59B6, #6C3483);
     }
 
-    .fab-tour {
-      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-      color: var(--dark);
-      font-weight: 700;
-    }
-
-    .fab-tour.paused {
-      background: linear-gradient(135deg, #3D1500, #8B1A1A);
-      color: white;
-    }
-
     .fab-tooltip {
       position: absolute;
       right: 60px;
@@ -3042,8 +3031,6 @@
 
   <!-- FABs -->
   <div class="fab-group">
-    <button class="fab fab-tour" id="autoTourBtn" onclick="toggleAutoTour()" title="Auto Tour">⏸<span
-        class="fab-tooltip">Pause Auto Tour</span></button>
     <button class="fab fab-confetti" onclick="launchConfetti()" title="Celebrate!">🎆<span
         class="fab-tooltip">Celebrate!</span></button>
     <button class="fab fab-wa" onclick="shareWhatsApp()" title="Share">
@@ -3613,13 +3600,8 @@
 
       setTimeout(() => {
         document.getElementById('giftIntro').classList.add('hide');
-        startAutoTour();
       }, 1200);
     }
-
-    setTimeout(() => {
-      if (!giftOpened) openGift();
-    }, 3200);
 
     /* ── MUSIC PLAYER ── */
     const songs = ['Tum Hi Ho', 'Teri Meri', 'Kesariya', 'Raabta', 'Pehla Nasha', 'Mere Haath Mein'];
@@ -3717,17 +3699,7 @@
     }
 
     /* ── PAGE NAVIGATION ── */
-    const autoTourPages = ['home', 'about', 'events', 'location', 'gallery', 'wishes', 'rsvp', 'gift'];
-    let autoTourIndex = 0;
-    let autoTourTimer = null;
-    let autoTourScrollTimer = null;
-    let autoTourPaused = false;
-    const autoTourDelay = 9000;
-    const autoTourScrollDelay = 2200;
-
-    function showPage(id, fromAutoTour = false) {
-      if (!fromAutoTour && autoTourTimer) pauseAutoTour();
-
+    function showPage(id) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -3738,76 +3710,6 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(checkReveal, 100);
       return false;
-    }
-
-    function updateAutoTourButton() {
-      const btn = document.getElementById('autoTourBtn');
-      if (!btn) return;
-      const tooltip = btn.querySelector('.fab-tooltip');
-      btn.classList.toggle('paused', autoTourPaused);
-      btn.firstChild.textContent = autoTourPaused ? '▶' : '⏸';
-      if (tooltip) tooltip.textContent = autoTourPaused ? 'Start Auto Tour' : 'Pause Auto Tour';
-      btn.title = autoTourPaused ? 'Start Auto Tour' : 'Pause Auto Tour';
-    }
-
-    function startAutoTour() {
-      clearAutoTourTimers();
-      autoTourPaused = false;
-      const activePage = document.querySelector('.page.active');
-      autoTourIndex = Math.max(0, autoTourPages.indexOf(activePage ? activePage.id : 'home'));
-      updateAutoTourButton();
-      scheduleAutoTourStep();
-    }
-
-    function clearAutoTourTimers() {
-      clearTimeout(autoTourTimer);
-      clearTimeout(autoTourScrollTimer);
-      autoTourTimer = null;
-      autoTourScrollTimer = null;
-    }
-
-    function getAutoTourScrollTarget(pageId) {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (pageId === 'gift') return Math.max(0, maxScroll);
-
-      const page = document.getElementById(pageId);
-      if (!page) return 0;
-      const pageBottom = page.offsetTop + page.offsetHeight - window.innerHeight + 24;
-      return Math.max(0, Math.min(pageBottom, maxScroll));
-    }
-
-    function scheduleAutoTourStep() {
-      const currentPageId = autoTourPages[autoTourIndex];
-
-      autoTourScrollTimer = setTimeout(() => {
-        if (autoTourPaused) return;
-        const target = getAutoTourScrollTarget(currentPageId);
-        if (target > window.scrollY + 30) {
-          window.scrollTo({ top: target, behavior: 'smooth' });
-          setTimeout(checkReveal, 700);
-        }
-      }, autoTourScrollDelay);
-
-      autoTourTimer = setTimeout(() => {
-        if (autoTourPaused) return;
-        autoTourIndex = (autoTourIndex + 1) % autoTourPages.length;
-        showPage(autoTourPages[autoTourIndex], true);
-        scheduleAutoTourStep();
-      }, autoTourDelay);
-    }
-
-    function pauseAutoTour() {
-      clearAutoTourTimers();
-      autoTourPaused = true;
-      updateAutoTourButton();
-    }
-
-    function toggleAutoTour() {
-      if (autoTourTimer) {
-        pauseAutoTour();
-      } else {
-        startAutoTour();
-      }
     }
 
     /* ── FLOATING PETALS ── */
