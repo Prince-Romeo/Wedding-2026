@@ -3762,6 +3762,8 @@
     ];
     const galleryStorageKey = 'weddingGalleryPhotos';
     const firebaseConfig = {
+      // Firebase Console > Project settings > Your apps > Web app config.
+      // In values ko bharte hi gallery sab phones/laptops par sync hone lagegi.
       apiKey: '',
       authDomain: '',
       projectId: '',
@@ -3776,7 +3778,10 @@
     const gallerySyncNote = document.getElementById('gallerySyncNote');
 
     function isFirebaseConfigured() {
-      return Object.values(firebaseConfig).every(value => value && !String(value).includes('YOUR_'));
+      return Object.values(firebaseConfig).every(value => {
+        const text = String(value || '').trim();
+        return text && !text.includes('YOUR_') && !text.includes('PASTE_');
+      });
     }
 
     function setGalleryStatus(message, isError = false) {
@@ -3795,6 +3800,10 @@
 
     function saveLocalGalleryPhotos(photos) {
       localStorage.setItem(galleryStorageKey, JSON.stringify(photos));
+    }
+
+    function clearLocalGalleryPhotos() {
+      localStorage.removeItem(galleryStorageKey);
     }
 
     function makeGalleryId() {
@@ -3864,6 +3873,15 @@
       grid.appendChild(item);
     }
 
+    function dataUrlToBlob(dataUrl) {
+      const [header, data] = dataUrl.split(',');
+      const mime = (header.match(/:(.*?);/) || [])[1] || 'image/jpeg';
+      const binary = atob(data);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return new Blob([bytes], { type: mime });
+    }
+
     function deleteGalleryPhoto(photo, item) {
       item.style.transition = 'opacity 0.3s, transform 0.3s';
       item.style.opacity = '0';
@@ -3890,6 +3908,7 @@
       try {
         if (cloudGallery) {
           await Promise.all(files.map(file => cloudGallery.uploadPhoto(file)));
+          setGalleryStatus('Cloud sync on hai. Photo sab phones/laptops par dikh jayegi.');
         } else {
           const newPhotos = [];
           for (const file of files) {
@@ -3911,7 +3930,7 @@
       if (!isFirebaseConfigured()) {
         uploadedPhotos = getLocalGalleryPhotos();
         buildGallery();
-        setGalleryStatus('Photos is device par save rahengi. Sab phones par dikhane ke liye Firebase config bhar dein.');
+        setGalleryStatus('Cloud sync OFF hai: photo sirf is device par dikh rahi hai. Phone/laptop sab me dikhane ke liye Firebase config bharna hoga.', true);
         return;
       }
 
@@ -3926,11 +3945,13 @@
       const db = firebase.firestore(app);
       const storage = firebase.storage(app);
       const collection = db.collection('weddingGalleryPhotos');
+      let didMigrateLocalPhotos = false;
 
       cloudGallery = {
-        uploadPhoto: async file => {
+        uploadPhoto: async (file, existingPhoto = null) => {
           const id = makeGalleryId();
-          const safeName = file.name.replace(/[^a-z0-9._-]/gi, '-').toLowerCase();
+          const fileName = file.name || existingPhoto?.name || 'wedding-photo.jpg';
+          const safeName = fileName.replace(/[^a-z0-9._-]/gi, '-').toLowerCase();
           const path = `wedding-gallery/${id}-${safeName}`;
           const ref = storage.ref(path);
           await ref.put(file);
@@ -3938,7 +3959,7 @@
           await collection.doc(id).set({
             src,
             path,
-            name: file.name,
+            name: fileName,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         },
@@ -3952,6 +3973,18 @@
         uploadedPhotos = snapshot.docs.map(doc => ({ id: doc.id, cloudId: doc.id, ...doc.data() }));
         buildGallery();
         setGalleryStatus('Cloud sync on hai. Yahan add ki gayi photos sab phones par dikhengi.');
+
+        const localOnlyPhotos = getLocalGalleryPhotos().filter(photo => photo.src && photo.src.startsWith('data:image/'));
+        if (!didMigrateLocalPhotos && localOnlyPhotos.length) {
+          didMigrateLocalPhotos = true;
+          setGalleryStatus('Laptop me saved purani photos cloud par bhej raha hoon...');
+          Promise.all(localOnlyPhotos.map(photo => cloudGallery.uploadPhoto(dataUrlToBlob(photo.src), photo)))
+            .then(() => {
+              clearLocalGalleryPhotos();
+              setGalleryStatus('Purani photos bhi cloud me save ho gayi. Ab sab devices par dikhengi.');
+            })
+            .catch(() => setGalleryStatus('Purani local photos cloud par nahi ja payi. Firebase Storage rules/config check karein.', true));
+        }
       }, () => {
         cloudGallery = null;
         uploadedPhotos = getLocalGalleryPhotos();
