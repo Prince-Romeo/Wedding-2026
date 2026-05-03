@@ -3312,12 +3312,14 @@
       <div class="rsvp-wrap">
         <div class="rsvp-form reveal">
           <form id="rsvpForm" onsubmit="submitRsvp(event)">
-            <div class="form-group"><label class="form-label">Your Full Name</label><input type="text"
+            <div class="form-group"><label class="form-label">Your Full Name</label><input type="text" id="rsvpName"
                 class="form-input" placeholder="Apna naam likhein" required></div>
-            <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-input"
-                placeholder="+91 XXXXX XXXXX" required></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" id="rsvpPhone"
+                class="form-input" placeholder="+91 XXXXX XXXXX" required></div>
+            <div class="form-group"><label class="form-label">Email Address</label><input type="email" id="rsvpEmail"
+                class="form-input" placeholder="thank-you email ke liye email likhein" required></div>
             <div class="form-group"><label class="form-label">Will You Attend?</label>
-              <select class="form-select" required>
+              <select class="form-select" id="rsvpAttend" required>
                 <option value="">-- Select --</option>
                 <option>✅ Haan, zaroor aaunga/aaungi!</option>
                 <option>👨‍👩‍👧 Haan, pariwar ke saath aaunga/aaungi</option>
@@ -3325,9 +3327,9 @@
                 <option>🤔 Baad mein confirm karunga/karungi</option>
               </select>
             </div>
-            <div class="form-group"><label class="form-label">Number of Guests</label><input type="number"
+            <div class="form-group"><label class="form-label">Number of Guests</label><input type="number" id="rsvpGuests"
                 class="form-input" placeholder="Kitne log aayenge?" min="1" max="20"></div>
-            <div class="form-group"><label class="form-label">Your Blessings & Message</label><textarea
+            <div class="form-group"><label class="form-label">Your Blessings & Message</label><textarea id="rsvpMessage"
                 class="form-textarea" placeholder="Khushbu aur Sujeet ke liye apni shubhkamnaein likhein..."></textarea>
             </div>
             <button type="submit" class="btn-submit">💌 Send RSVP & Blessings</button>
@@ -3790,6 +3792,16 @@
       gallerySyncNote.classList.toggle('error', isError);
     }
 
+    function getFirebaseServices() {
+      if (!isFirebaseConfigured() || !window.firebase) return null;
+      const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
+      return {
+        app,
+        db: firebase.firestore(app),
+        storage: firebase.storage(app)
+      };
+    }
+
     function getLocalGalleryPhotos() {
       try {
         return JSON.parse(localStorage.getItem(galleryStorageKey) || '[]');
@@ -3941,9 +3953,15 @@
         return;
       }
 
-      const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore(app);
-      const storage = firebase.storage(app);
+      const services = getFirebaseServices();
+      if (!services) {
+        uploadedPhotos = getLocalGalleryPhotos();
+        buildGallery();
+        setGalleryStatus('Firebase setup complete nahi hai, abhi local save mode chal raha hai.', true);
+        return;
+      }
+      const db = services.db;
+      const storage = services.storage;
       const collection = db.collection('weddingGalleryPhotos');
       let didMigrateLocalPhotos = false;
 
@@ -4036,8 +4054,53 @@
     }
 
     /* ── RSVP FORM ── */
-    function submitRsvp(e) {
+    function getSavedRsvps() {
+      try {
+        return JSON.parse(localStorage.getItem('weddingRsvps') || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function saveRsvpLocally(rsvp) {
+      const saved = getSavedRsvps();
+      saved.push(rsvp);
+      localStorage.setItem('weddingRsvps', JSON.stringify(saved));
+    }
+
+    async function saveRsvpToCloud(rsvp) {
+      const services = getFirebaseServices();
+      if (!services) {
+        saveRsvpLocally(rsvp);
+        return false;
+      }
+
+      await services.db.collection('weddingRsvps').add({
+        ...rsvp,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        thankYouEmailSent: false
+      });
+      return true;
+    }
+
+    async function submitRsvp(e) {
       e.preventDefault();
+      const rsvp = {
+        name: document.getElementById('rsvpName').value.trim(),
+        phone: document.getElementById('rsvpPhone').value.trim(),
+        email: document.getElementById('rsvpEmail').value.trim(),
+        attendance: document.getElementById('rsvpAttend').value,
+        guests: document.getElementById('rsvpGuests').value || '1',
+        message: document.getElementById('rsvpMessage').value.trim(),
+        submittedAt: new Date().toISOString()
+      };
+
+      try {
+        await saveRsvpToCloud(rsvp);
+      } catch {
+        saveRsvpLocally(rsvp);
+      }
+
       document.getElementById('rsvpForm').style.display = 'none';
       document.getElementById('successMsg').style.display = 'block';
       launchConfetti();
